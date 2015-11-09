@@ -33,7 +33,7 @@ namespace TennisGame
                 }
                 Console.WriteLine("Score is: " + game.GetScore()); // Score of the game
                 
-                if (GameIfWon(player1, player2))    //check if game is already won
+                if (GameIsWon(player1, player2))    //check if game is already won
                 {
                     running = false; 
                 }
@@ -45,7 +45,7 @@ namespace TennisGame
         /*
         Checks if the game is won 
         */
-        static bool GameIfWon(Player player1, Player player2)
+        static bool GameIsWon(Player player1, Player player2)
         {
             if (player1.GetPoints() >= 4 && Math.Abs(player1.GetPoints() - player2.GetPoints()) >= 2)   //Player1 wins
             {

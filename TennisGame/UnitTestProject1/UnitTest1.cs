@@ -35,6 +35,14 @@ namespace UnitTestProject1
         #endregion
 
         #region game stuff
+
+        [TestMethod]
+        public void TestTranslateScore()
+        {
+            Assert.AreEqual("love", _game.TranslateScore(0));
+            Assert.AreEqual("40", _game.TranslateScore(3));
+        }
+
         [TestMethod]
         public void TestScoreBeforeGame()
         {

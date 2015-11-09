@@ -44,7 +44,7 @@ namespace TennisGame
             return TranslateScore(_player2.GetPoints())+" player2";
         }
 
-        private String TranslateScore(int point)
+        public String TranslateScore(int point)
         {
             switch (point)
             {
