@@ -8,7 +8,7 @@ namespace Game_of_Life
 {
     class Program
     {
-        private int rows, cols, sleepTimer; 
+        private int rows, cols, sleepTimer;
         int[,] cell;
         static void Main()
         {
@@ -17,11 +17,11 @@ namespace Game_of_Life
 
             gol.Startup();
 
-            
-            
+
+
         }
 
-       
+
 
         static IEnumerable<int> Rg = Enumerable.Range(-1, 3);
 
@@ -61,11 +61,12 @@ namespace Game_of_Life
             {
                 WriteCells(cell, rows, cols);
                 System.Threading.Thread.Sleep(sleepTimer);
-                
+
                 cell = Gen(cell, rows, cols);
             }
             Console.WriteLine("Continue? (Y/N)");
-            if (Console.ReadLine().ToLower().Equals("y")){
+            if (Console.ReadLine().ToLower().Equals("y"))
+            {
                 setTicks();
 
             }
