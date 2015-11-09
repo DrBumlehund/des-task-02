@@ -5,9 +5,9 @@ namespace CuriousityGame
     [Serializable]
     public class InvalidMoveException : Exception
     {
-        public InvalidMoveException(Move m) : base(String.Format(""))
+        public InvalidMoveException(Move m) : base(String.Format("failed doing: " + m.ToString()))
         {
-            
+
         }
     }
 }
