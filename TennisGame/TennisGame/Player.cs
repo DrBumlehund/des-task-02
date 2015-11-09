@@ -9,8 +9,7 @@ namespace TennisGame
     public class Player
     {
         private int _points { get; set; }
-        private String _runningScore;
-
+        
         public Player()
         {
             this._points = 0; 
