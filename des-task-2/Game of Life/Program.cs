@@ -12,47 +12,55 @@ namespace Game_of_Life
         int[,] cell;
         static void Main()
         {
-
             Program gol = new Program();
-
             gol.Startup();
-
-
-
         }
 
-
-
-        static IEnumerable<int> Rg = Enumerable.Range(-1, 3);
+        IEnumerable<int> Rg = Enumerable.Range(-1, 3);
 
         private void Startup()
         {
+            string input = null;
             try
             {
                 Console.Write("Enter size:  ");
-                rows = Convert.ToInt32(Console.ReadLine());
-                cols = rows;
+                input = Console.ReadLine();
+                rows = Convert.ToInt32(input);
+                cols = rows; //it needs to be square.
                 Console.Write("Enter delay [ms]:  ");
-                sleepTimer = Convert.ToInt32(Console.ReadLine());
+                input = Console.ReadLine();
+                sleepTimer = Convert.ToInt32(input);
             }
             catch (FormatException)
             {
-                Console.WriteLine("Please enter numbers in integers");
+                Console.WriteLine("\n--------------------------------------------------");
+                Console.WriteLine("Error: " + input + " could not be converted to intger \nPlease try again, using numbers");
+                Console.WriteLine("--------------------------------------------------\n");
+                Startup();
             }
-
-            cell = new int[rows, cols];
-            var rnd = new Random();
-            Do(cell, rows, cols, (r, c) => { cell[r, c] = (int)Math.Round(rnd.NextDouble()); });
-
+            InitializeCell();
             setTicks();
 
 
         }
 
+
         private void setTicks()
         {
-            Console.Write("Enter ticks:  ");
-            Play(Convert.ToInt32(Console.ReadLine()));
+            string input = null;
+            try
+            {
+                Console.Write("Enter ticks:  ");
+                input = Console.ReadLine();
+                Play(Convert.ToInt32(input));
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("\n--------------------------------------------------");
+                Console.WriteLine("Error: " + input + " could not be converted to intger \nPlease try again, using numbers");
+                Console.WriteLine("--------------------------------------------------\n");
+                setTicks();
+            }
         }
 
         private void Play(int ticks)
@@ -62,32 +70,54 @@ namespace Game_of_Life
                 WriteCells(cell, rows, cols);
                 System.Threading.Thread.Sleep(sleepTimer);
 
-                cell = Gen(cell, rows, cols);
+                cell = Gen();
             }
-            Console.WriteLine("Continue? (Y/N)");
-            if (Console.ReadLine().ToLower().Equals("y"))
+            askForReplay();
+
+        }
+
+        private void askForReplay()
+        {
+
+            Console.Write("Continue? (Y/N)  ");
+            string input = Console.ReadLine();
+            if (input.ToLower().Equals("y"))
             {
                 setTicks();
-
+            }
+            else if (input.ToLower().Equals("n"))
+            {
+                Console.Clear();
+                Console.WriteLine("\n-----------------------");
+                Console.WriteLine("|Thank you for playing|");
+                Console.WriteLine("-----------------------");
+                System.Threading.Thread.Sleep(1000);
             }
             else
             {
-                Console.Clear();
-                Console.WriteLine("Thank you for playing");
-                System.Threading.Thread.Sleep(1000);
+                Console.WriteLine("\n--------------------------------------------------");
+                Console.WriteLine("Error: input \"" + input + "\" isn't an acceptable input. \nPlease try again, using either \"Y\" or \"N\"");
+                Console.WriteLine("--------------------------------------------------\n");
+                askForReplay();
             }
-
         }
 
-        public int Nbrs(int[,] cell, int r, int c)
+        public int Neighbours(int r, int c)
         {
-            return Rg.Sum(dr => Rg.Sum(dc => cell[r + dr, c + dc]));
+            return Rg.Sum(dr => Rg.Sum(dc => cell[r + dr, c + dc])) - cell[r, c];
         }
 
-        public int Next(int[,] cell, int r, int c)
+        public int Next(int r, int c)
         {
-            var nbrs = Nbrs(cell, r, c) - cell[r, c];
-            return (cell[r, c] == 0 && nbrs == 3 || cell[r, c] == 1 && (nbrs == 2 || nbrs == 3)) ? 1 : 0;
+            var nbrs = Neighbours(r, c);
+            if (cell[r, c] == 0 && nbrs == 3 || cell[r, c] == 1 && (nbrs == 2 || nbrs == 3))
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public void Do(int[,] cell, int rows, int cols, Action<int, int> a)
@@ -101,21 +131,43 @@ namespace Game_of_Life
             }
         }
 
-        public int[,] Gen(int[,] cell, int rows, int cols)
+        public int[,] Gen()
         {
             var nxt = new int[rows, cols];
-            Do(cell, rows, cols, (r, c) => { nxt[r, c] = Next(cell, r, c); });
+            for (var r = 1; r < rows - 1; r++)
+            {
+                for (var c = 1; c < cols - 1; c++)
+                {
+                    nxt[r, c] = Next(r, c);
+                }
+            }
             return nxt;
         }
 
         public void WriteCells(int[,] cell, int rows, int cols)
         {
             Console.Clear();
-            Do(cell, rows, cols, (r, c) =>
+            for (var r = 1; r < rows - 1; r++)
             {
-                Console.Write(cell[r, c] == 0 ? '-' : '*');
-                if (c == cols - 2) Console.WriteLine();
-            });
+                for (var c = 1; c < cols - 1; c++)
+                {
+                    Console.Write(cell[r, c] == 0 ? '-' : '*');
+                    if (c == cols - 2) Console.WriteLine();
+                }
+            }
         }
+        private void InitializeCell()
+        {
+            cell = new int[rows, cols];
+            var rnd = new Random();
+            for (var r = 1; r < rows - 1; r++)
+            {
+                for (var c = 1; c < cols - 1; c++)
+                {
+                    cell[r, c] = (int)Math.Round(rnd.NextDouble());
+                }
+            }
+        }
+        
     }
 }
