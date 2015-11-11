@@ -16,10 +16,11 @@ namespace Game_of_Life
             gol.Startup();
         }
 
-        IEnumerable<int> Rg = Enumerable.Range(-1, 3);
+        IEnumerable<int> Rg = Enumerable.Range(-1, 2);
 
         private void Startup()
         {
+            Console.Clear();
             string input = null;
             try
             {
@@ -65,40 +66,60 @@ namespace Game_of_Life
 
         private void Play(int ticks)
         {
+            bool playOn = true; //made to secure that when the end condition is met, the game doesn't ask for continuation.
             for (int i = 0; i < ticks; i++)
             {
-                WriteCells(cell, rows, cols);
-                System.Threading.Thread.Sleep(sleepTimer);
-
-                cell = Gen();
+                if (endCondition())
+                {
+                    WriteCells(cell, rows, cols);
+                    System.Threading.Thread.Sleep(sleepTimer);
+                    cell = Gen();
+                    
+                }
+                else
+                {
+                    Console.WriteLine(i);
+                    playOn = false;
+                    break;
+                }
             }
-            askForReplay();
-
+            if (playOn)
+            {
+                if (askForReplay("Continue?"))
+                {
+                    setTicks();
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("\n-----------------------");
+                    Console.WriteLine("|Thank you for playing|");
+                    Console.WriteLine("-----------------------");
+                    System.Threading.Thread.Sleep(1000);
+                }
+            }
         }
 
-        private void askForReplay()
+        private bool askForReplay(string question)
         {
 
-            Console.Write("Continue? (Y/N)  ");
+            Console.Write(question + " (Y/N)  ");
             string input = Console.ReadLine();
             if (input.ToLower().Equals("y"))
             {
-                setTicks();
+                return true;
             }
             else if (input.ToLower().Equals("n"))
             {
-                Console.Clear();
-                Console.WriteLine("\n-----------------------");
-                Console.WriteLine("|Thank you for playing|");
-                Console.WriteLine("-----------------------");
-                System.Threading.Thread.Sleep(1000);
+                return false;
             }
             else
             {
                 Console.WriteLine("\n--------------------------------------------------");
                 Console.WriteLine("Error: input \"" + input + "\" isn't an acceptable input. \nPlease try again, using either \"Y\" or \"N\"");
                 Console.WriteLine("--------------------------------------------------\n");
-                askForReplay();
+                askForReplay(question);
+                return false;
             }
         }
 
@@ -117,17 +138,6 @@ namespace Game_of_Life
             else
             {
                 return 0;
-            }
-        }
-
-        public void Do(int[,] cell, int rows, int cols, Action<int, int> a)
-        {
-            for (var r = 1; r < rows - 1; r++)
-            {
-                for (var c = 1; c < cols - 1; c++)
-                {
-                    a(r, c);
-                }
             }
         }
 
@@ -168,6 +178,40 @@ namespace Game_of_Life
                 }
             }
         }
-        
+        private bool endCondition()
+        {
+            int living = 0;
+            for (var r = 1; r < rows - 1; r++)
+            {
+                for (var c = 1; c < cols - 1; c++)
+                {
+                    living += cell[r, c];
+
+                }
+            }
+            if (living == 0)
+            {
+                Console.WriteLine("\n------------");
+                Console.WriteLine("|Game Over!|");
+                Console.WriteLine("------------");
+                if (askForReplay("Restart game?"))
+                {
+                    Startup();
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("\n-----------------------");
+                    Console.WriteLine("|Thank you for playing|");
+                    Console.WriteLine("-----------------------");
+                    System.Threading.Thread.Sleep(1000);
+                }
+                return false;
+
+            }
+
+            return true;
+        }
+
     }
 }
